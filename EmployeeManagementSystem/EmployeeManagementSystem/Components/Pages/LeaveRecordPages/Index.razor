@@ -1,0 +1,34 @@
+﻿@page "/tickets"
+
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@rendermode InteractiveServer
+
+@attribute [StreamRendering]
+@attribute [Authorize(Roles = "Manager")]
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using EmployeeManagementSystem.Models
+
+<PageTitle>Tickets</PageTitle>
+
+<h1>Raised tickets</h1>
+<hr />
+
+@if (!isLoaded)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <QuickGrid Class="table" Items="DB.LeaveRecords">
+        <PropertyColumn Property="leaverecord => leaverecord.EmployeeID" Title="Employee ID" Sortable="true" />
+        <PropertyColumn Property="leaverecord => leaverecord.LeaveStatusMsg" Title="Remarks" Sortable="true" />
+        <PropertyColumn Property='leaverecord => leaverecord.LeaveStatus == true ? "OPEN" : "CLOSED"' Title="Ticket status" Sortable="true" />
+        <PropertyColumn Property="leaverecord => leaverecord.TicketDate" Title="Date" Sortable="true" />
+
+        <TemplateColumn Context="leaverecord">
+            <a href="@($"tickets/details?id={leaverecord.Id}")">Details</a>
+        </TemplateColumn>
+    </QuickGrid>
+}

@@ -1,0 +1,58 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="d-flex justify-content-center">
+        <a class="navbar-brand" href="/home">Navigation menu</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.bi bi-pen-fill').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/home" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <AuthorizeView Roles="Manager, Staff">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/dashboard" Match="NavLinkMatch.All">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Dashboard
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Manager">
+            <Authorized>
+                <div class="nav-item px-3 align-items-center">
+                    <NavLink class="nav-link" href="/tickets" Match="NavLinkMatch.All">
+                        <span class="bi bi-ticket-detailed mb-4" aria-hidden="true"></span> Tickets
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Manager, Staff">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/raise-ticket" Match="NavLinkMatch.All">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Raise Tickets
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="nav-item px-3 align-items-center">
+            <NavLink class="nav-link" href="/credits" Match="NavLinkMatch.All">
+                <span class="bi bi-pen-fill mb-4" aria-hidden="true"></span> Credits
+            </NavLink>
+        </div>
+
+    </nav>
+
+</div>
+
+
+

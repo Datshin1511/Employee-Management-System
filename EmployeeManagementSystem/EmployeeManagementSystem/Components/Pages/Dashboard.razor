@@ -1,0 +1,46 @@
+﻿@page "/dashboard"
+@page "/home/dashboard"
+
+@using Microsoft.AspNetCore.Authorization
+@using EmployeeManagementSystem.Models
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Manager,Staff")]
+@attribute [StreamRendering]
+
+<PageTitle>Dashboard</PageTitle>
+
+<p class="display-4">Dashboard</p>
+<hr />
+
+<AuthorizeView Roles="Manager">
+    <Authorized>
+        <p class="text-success">Welcome Manager!</p>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="Staff">
+    <Authorized>
+        <h3>Ticket History</h3>
+
+        <div>
+            <hr />
+            @if (LoggedEmployeeID is null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <QuickGrid Class="table" Items="DB.LeaveRecords.Where(emp => emp.EmployeeID == LoggedEmployeeID)">
+                    <PropertyColumn Property="leaverecord => leaverecord.TicketDate" Title="Date" Sortable="true" />
+                    <PropertyColumn Property="leaverecord => leaverecord.LeaveReason" Title="Leave statement" />
+                    <PropertyColumn Property="leaverecord => leaverecord.LeaveStatusMsg" Title="Remarks" Sortable="true" />
+                    <PropertyColumn Property='leaverecord => leaverecord.LeaveStatus == true ? "OPEN" : "CLOSED"' Title="Ticket status" Sortable="true" />
+                </QuickGrid>
+            }
+        </div>
+    </Authorized>
+</AuthorizeView>

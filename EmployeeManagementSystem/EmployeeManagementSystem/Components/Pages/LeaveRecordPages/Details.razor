@@ -1,0 +1,157 @@
+﻿@page "/tickets/details"
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@attribute [Authorize(Roles = "Manager")]
+
+@using EmployeeManagementSystem.Models
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Leave Records</PageTitle>
+
+<h1>Leave Records</h1>
+
+<div>
+    <hr />
+    @if (userDetails is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Employee Name</dt>
+            <dd class="col-sm-10">@userDetails.FirstName @userDetails.LastName</dd>
+            <dt class="col-sm-2">Employee ID</dt>
+            <dd class="col-sm-10">@leaverecord!.EmployeeID</dd>
+            <dt class="col-sm-2">Phone number</dt>
+            <dd class="col-sm-10">@userDetails.PhoneNumber</dd>
+            <dt class="col-sm-2">Email ID</dt>
+            <dd class="col-sm-10">@userDetails.EmailID</dd>
+            <dt class="col-sm-2">Leaves taken (For this month)</dt>
+            <dd class="col-sm-10">@EmployeeLeaves</dd>
+            <hr />
+            <dt class="col-sm-2">Leave statement</dt> 
+            <dd class="col-sm-10">@leaverecord.LeaveReason</dd>
+            <dt class="col-sm-2">Ticket Date</dt>
+            <dd class="col-sm-10">@leaverecord.TicketDate</dd>
+            <br />
+            <dt class="col-sm-2">Remarks</dt>
+            <dd class="col-sm-2">
+                <InputSelect id="leave-remark" class="form-select" @bind-Value="LeaveRemark" TValue="string">
+                    @foreach(var option in RemarkOptions)
+                    {
+                        <option value="@option">@option</option>
+                    })
+                </InputSelect>
+            </dd>
+        </dl>
+        
+        
+        <button class="btn btn-success" @onclick="UpdateLeaveRecord">@ButtonTitle</button>
+    }
+</div>
+
+@code {
+    private LeaveRecord? leaverecord;
+    private Employee? userDetails;
+
+    private LeaveRecord? UpdatedLeaveRecord;
+
+    private int EmployeeLeaves;
+    private string? LeaveRemark { get; set; }
+    private string? updateStatusMessage;
+    private string? ButtonTitle = "Update";
+    private List<string> RemarkOptions = new List<string> { "Accepted", "Rejected" };
+
+    private bool isUpdateMessageVisible = false;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        leaverecord = await DB.LeaveRecords.FirstOrDefaultAsync(m => m.Id == Id);
+
+        EmployeeLeaves = await DB.LeaveRecords.Where(emp => emp.EmployeeID == leaverecord!.EmployeeID && emp.LeaveStatusMsg == "Accepted" && emp.TicketDate.Month == DateTime.Now.Month).CountAsync();
+
+        userDetails = await DB.Employees.FirstOrDefaultAsync(m => m.EmployeeID == leaverecord!.EmployeeID);
+
+        if (leaverecord is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task UpdateLeaveRecord()
+    {
+        ButtonTitle = "Updating...";
+        isUpdateMessageVisible = true;
+
+        UpdateRemarks();
+
+        DB.LeaveRecords.Update(UpdatedLeaveRecord);
+
+        DB.Attach(UpdatedLeaveRecord!).State = EntityState.Modified;
+
+        await DB.SaveChangesAsync();
+
+        try
+        {
+            updateStatusMessage = "Succesfully updated the leave record!";
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!LeaveRecordExists(leaverecord!.Id))
+                {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+                {
+                updateStatusMessage = "Error updating the leave record";
+            throw;
+            }
+        }
+
+        await JSRuntime.InvokeVoidAsync("alert", updateStatusMessage);
+
+        NavigationManager.NavigateTo("/tickets");
+    }
+
+    private void UpdateRemarks()
+    {
+        UpdatedLeaveRecord = new LeaveRecord
+            {
+                Id = leaverecord!.Id,
+                EmployeeID = leaverecord!.EmployeeID,
+                LeaveReason = leaverecord!.LeaveReason,
+                TicketDate = leaverecord!.TicketDate,
+                LeaveStatusMsg = LeaveRemark!,
+                LeaveStatus = false
+            };
+
+        DB.Entry(leaverecord).State = EntityState.Detached;
+
+    }
+
+    bool LeaveRecordExists(int id)
+    {
+        return DB.LeaveRecords.Any(e => e.Id == id);
+    }
+
+    // Additionals.
+    private string GetBackgroundColor(string selectedOption)
+    {
+        return selectedOption switch
+        {
+            "Pending" => "#FFFFFF",
+            "Accepted" => "#38b000",
+            "Rejected" => "#c1121f",
+            _ => "#FFFFFF"
+        };
+    }
+}

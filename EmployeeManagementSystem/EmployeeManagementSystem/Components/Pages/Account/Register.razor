@@ -1,0 +1,85 @@
+﻿@page "/sign-up"
+
+@inject NavigationManager NavigationManager
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@attribute [StreamRendering]
+
+@using System.ComponentModel.DataAnnotations
+@using EmployeeManagementSystem.Models
+@using EmployeeManagementSystem.Components.Pages.PageComponents
+
+<PageTitle>Sign-up</PageTitle>
+
+<p class="display-4">Register.</p>
+<p>Sign-up to update profile information and to view updates and notifications from others.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-4 my-3">
+        <EditForm method="post" Model="Model" OnValidSubmit="CreateEmployeeRecord" FormName="RegisterForm" Enhance>
+            <DataAnnotationsValidator />
+
+            <div class="form-group mb-3">
+                <label for="FirstName" class="form-label">First name:</label>
+                <InputText id="FirstName" class="form-control" @bind-Value="Model.FirstName" />
+                <ValidationMessage For="@(() => Model.FirstName)" class="text-danger" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="LastName" class="form-label">Last name:</label>
+                <InputText id="LastName" class="form-control" @bind-Value="Model.LastName" />
+                <ValidationMessage For="@(() => Model.LastName)" class="text-danger" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Age" class="form-label">Age:</label>
+                <InputText id="Age" class="form-control" @attributes=@FormAttributes.numberAttribute @bind-Value="Model.Age" />
+                <ValidationMessage For="@(() => Model.Age)" class="text-danger" />
+            </div>
+
+            <div class="form-group row mb-3">
+                <label for="PhoneNumber" class="form-label">Phone number:</label>
+                <div class="row">
+                    <InputSelect id="EmployeeType" class="col form-select" @bind-Value="Model.PhoneCode">
+                        @foreach (var phCode in PhoneCodes)
+                        {
+                            <option value="@phCode" class="dropdown-item">@phCode</option>
+                        }
+                    </InputSelect>
+                    <InputText id="PhoneNumber" class="col form-control" @attributes=@FormAttributes.numberAttribute @bind-Value="Model.PhoneNumber" />
+                </div>
+                <div class="row">
+                    <ValidationMessage For="@(() => Model.PhoneNumber)" class="text-danger" />
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="EmployeeType" class="form-label">Designation:</label>
+                <InputSelect id="EmployeeType" class="form-select" @bind-Value="Model.EmployeeType">
+                    @foreach (var empType in EmployeeTypes)
+                    {
+                        <option value="@empType" class="dropdown-item">@empType</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Model.EmployeeType)" class="text-danger" />
+            </div>
+
+            <hr />
+
+            <div class="form-group mb-3">
+                <label for="EmailID" class="form-label fw-bold">Email ID</label>
+                <InputText id="EmailID" class="form-control" @attributes=@FormAttributes.emailAttribute @bind-Value="Model.EmailID" />
+                <ValidationMessage For="@(() => Model.EmailID)" class="text-danger" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="EmailPassword" class="form-label fw-bold">Password</label>
+                <InputText id="EmailPassword" class="form-control" @attributes=@FormAttributes.passwordAttribute @bind-Value="Model.EmailPassword" typeof="password" />
+                <ValidationMessage For="@(() => Model.EmailPassword)" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">@buttonTitle</button>
+        </EditForm>
+    </div>
+
+</div>
+

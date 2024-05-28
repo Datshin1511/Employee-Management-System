@@ -1,0 +1,49 @@
+﻿@page "/tickets/raise-ticket"
+@page "/raise-ticket"
+
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProviders
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+
+@attribute [StreamRendering]
+@attribute [Authorize(Roles = "Manager,Staff")]
+
+@using System.ComponentModel.DataAnnotations
+@using EmployeeManagementSystem.Models
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Create</PageTitle>
+
+<p class="display-4">Raise a leave ticket.</p>
+<hr />
+
+<div class="row my-3 container-fluid">
+    @if (ticketLimitReached)
+    {
+        <h6 class="text-danger">You have reached the limit of 3 tickets per month. You can't raise more tickets. </h6>
+        <p class="fst-italic">For more information, consult your respective manager.</p>
+    }
+    else{
+        <EditForm method="post" Model="Model" OnValidSubmit="AddLeaveRecord" FormName="RaiseLeaveTicket" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="form-group mb-3">
+                <label for="leavereason" class="form-label fw-bold">Write your leave statement:</label>
+                <InputTextArea id="leavereason" class="form-control" @bind-Value="Model.Reason" maxlength="@MaxTextLength" @oninput="HandleInputChange"/>
+            </div>
+            <div class="mb-3 d-flex justify-content-end">
+                <p class="fw-bold">@InputLength / @MaxTextLength characters. </p>
+            </div>
+
+            <div class="my-3">
+                <p class="fs-0 fw-bold">Number of leaves taken (this month): @leavesTaken / 3</p>
+            </div>
+
+            <button type="submit px-2 py-1" class="btn btn-primary">@buttonTitle</button>
+        </EditForm>
+    }
+</div>

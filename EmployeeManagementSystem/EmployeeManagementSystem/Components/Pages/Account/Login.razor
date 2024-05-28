@@ -1,0 +1,54 @@
+﻿@page "/login"
+
+@inject EmployeeManagementSystem.Data.EMSDbContext DB
+@inject NavigationManager NavigationManager
+@attribute [StreamRendering]
+
+<PageTitle>Login</PageTitle>
+
+@if (IsLoggingIn)
+{
+    <p class="fw-light">Logging in..</p>
+}
+
+else
+{
+    <p class="display-4">Login.</p>
+    <p>Sign-in to view updates and notifications in your dashboard.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-4 my-3">
+            <div class="row">
+                <EditForm Model="Model" OnValidSubmit="Authenticate" FormName="LoginForm" Enhance>
+                    <DataAnnotationsValidator />
+
+                    <div class="row my-6">
+                        <p class="fw-lighter text-danger">@errorMessage</p>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="EmailID" class="form-label fw-bold">Email ID:</label>
+                        <InputText id="EmailID" class="form-control" @bind-Value="Model.EmailID" @attributes=FormAttributes.emailAttribute />
+                        <ValidationMessage For="@(() => Model.EmailID)" class="text-danger" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="EmailPassword" class="form-label fw-bold">Password:</label>
+                        <InputText id="EmailPassword" class="form-control" @bind-Value="Model.EmailPassword" @attributes=FormAttributes.passwordAttribute />
+                        <ValidationMessage For="@(() => Model.EmailPassword)" />
+                    </div>
+                    <button type="submit" class="btn btn-success">@buttonTitle</button>
+                </EditForm>
+            </div>
+
+        </div>
+
+        <div class="col-md-4 my-3 container-fluid">
+            <p class="display-6">Not registered yet ?</p>
+            <p class="fw-light"><a href="/sign-up">Click here</a> to sign-up.</p>
+        </div>
+    </div>
+
+}
+

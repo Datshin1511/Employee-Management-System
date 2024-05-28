@@ -1,0 +1,21 @@
+﻿@page "/"
+@page "/home"
+
+@inject IJSRuntime JSRuntime
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <h1 class="display-4">Welcome, @username.</h1>
+        <p>Navigate around your dashboard to view different updates and notifications.</p>
+        <br />
+        <button class="btn btn-outline-primary" @onclick="DisplayGreetingAlert">Display Greeting Alert</button>
+    </Authorized>
+    <NotAuthorized>
+        <h1 class="display-4">Welcome, User.</h1>
+        <p class="fw-light"><a href="\login">Login</a> to view your notifications, updates and your profile information.</p>
+    </NotAuthorized>
+</AuthorizeView>

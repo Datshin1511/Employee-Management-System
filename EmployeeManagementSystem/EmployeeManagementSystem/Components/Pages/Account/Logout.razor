@@ -1,0 +1,13 @@
+﻿@page "/logout"
+
+@using Microsoft.AspNetCore.Authentication
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+<h3>@message</h3>
+@if(isLoggedOut)
+{
+    <p class="fst-italic">You will be redirected to the login page in few seconds..</p>
+}
+
